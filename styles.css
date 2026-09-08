@@ -1,0 +1,254 @@
+:root {
+  color-scheme: light;
+  --color-background: #ffffff;
+  --color-surface: #f8f9fa;
+  --color-surface-strong: #f1f3f4;
+  --color-border: #dadce0;
+  --color-text: #202124;
+  --color-text-muted: #5f6368;
+  --color-heading: #202124;
+  --color-header: #ffffff;
+  --color-header-text: #202124;
+  --color-accent: #1a73e8;
+  --color-accent-hover: #1557b0;
+  --color-focus: #1a73e8;
+  --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --measure: 72rem;
+  --reading-measure: 68ch;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --space-9: 7rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --shadow-subtle: 0 1px 2px rgb(16 22 20 / 0.05);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: visible;
+  overflow-y: visible;
+  overscroll-behavior-y: contain;
+}
+
+html {
+  background: var(--color-background);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  padding-top: 4.5rem;
+}
+
+header {
+  width: 100%;
+  margin: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  background: var(--color-header);
+  color: var(--color-header-text);
+  border-bottom: 1px solid var(--color-border);
+}
+
+nav,
+main,
+footer {
+  width: min(100% - 2rem, var(--measure));
+  margin-inline: auto;
+}
+
+nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  min-height: 4.5rem;
+  margin: 0;
+  padding: var(--space-3) 0;
+  list-style: none;
+}
+
+nav li:first-child {
+  margin-right: auto;
+}
+
+nav a {
+  display: inline-block;
+  padding: var(--space-2) 0;
+  color: var(--color-header-text);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+nav li:not(:first-child) a:hover {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+nav a.is-active {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+body:not(.js):has(#about:target) nav a[href="#about"],
+body:not(.js):has(#research:target) nav a[href="#research"],
+body:not(.js):has(#experience:target) nav a[href="#experience"],
+body:not(.js):has(#awards:target) nav a[href="#awards"] {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+main {
+  padding-block: var(--space-7) var(--space-9);
+}
+
+section {
+  margin-block: var(--space-8);
+  scroll-margin-top: 5rem;
+}
+
+#home {
+  margin-top: 0;
+  margin-bottom: var(--space-9);
+  padding-block: var(--space-8) var(--space-9);
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  color: var(--color-heading);
+  line-height: 1.15;
+}
+
+header a,
+header h1,
+header h2,
+header h3 {
+  color: var(--color-header-text);
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+}
+
+h2 {
+  margin-bottom: var(--space-5);
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+p {
+  max-width: var(--reading-measure);
+  margin-block: var(--space-2);
+}
+
+section > p {
+  color: var(--color-text-muted);
+}
+
+#home p:first-of-type {
+  margin-top: 1;
+  color: var(--color-text-muted);
+  font-size: 1.125rem;
+  font-weight: 400;
+}
+
+#home p:last-of-type {
+  margin-top: var(--space-7);
+  margin-bottom: 0;
+  font-size: 1.0625rem;
+}
+
+article {
+  margin-top: var(--space-7);
+}
+
+article p {
+  margin-bottom: 0;
+  color: var(--color-text-muted);
+}
+
+#awards article p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: baseline;
+}
+
+#awards time {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+#awards strong {
+  color: var(--color-heading);
+}
+
+footer {
+  min-height: var(--space-8);
+  padding-block: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+footer p {
+  margin-block: 0 var(--space-3);
+}
+
+footer a {
+  color: var(--color-accent);
+  text-underline-offset: 0.2em;
+}
+
+footer a:hover {
+  color: var(--color-accent-hover);
+}
+
+@media (min-width: 48rem) {
+  nav,
+  main,
+  footer {
+    width: min(100% - 4rem, var(--measure));
+  }
+
+  nav ul {
+    gap: var(--space-4) var(--space-5);
+  }
+
+  main {
+    padding-block: var(--space-8) var(--space-9);
+  }
+
+  #home {
+    padding-block: var(--space-9);
+  }
+}
