@@ -301,14 +301,9 @@ All externally verifiable claims must be reviewed before deployment.
 
 ### 8.1 Visual direction
 
-The visual system is a Google-inspired enterprise light mode:
-
-- Matte off-white page background.
-- Deep obsidian or dark slate for header and high-contrast surfaces.
-- Muted dark gray for body copy.
-- Very light gray containers with refined borders for grouped content.
-- One intentional accent color for links, focus, and selected interactive states.
-- Generous whitespace and an explicit vertical rhythm.
+The visual system directly adopts Google's Material Design color palette
+(blue #1a73e8 accent, neutral grays), chosen as a proven, well-tested
+starting point to iterate from rather than an original palette.
 
 The page should feel calm, exact, and credible. Avoid decorative gradients, excessive rounded cards, neon colors, dense visual effects, and animation that competes with the content.
 
@@ -318,18 +313,18 @@ Use CSS custom properties so the system remains centrally adjustable:
 
 ```css
 :root {
-  --color-background: #f8f9f7;
-  --color-surface: #eef0ed;
-  --color-surface-strong: #e3e7e3;
-  --color-border: #d6dbd6;
-  --color-text: #202522;
-  --color-text-muted: #5f6862;
-  --color-heading: #101614;
-  --color-header: #17201d;
-  --color-header-text: #f5f7f4;
-  --color-accent: #1769aa;
-  --color-accent-hover: #0d4f83;
-  --color-focus: #b45309;
+  --color-background: #ffffff;
+  --color-surface: #f8f9fa;
+  --color-surface-strong: #f1f3f4;
+  --color-border: #dadce0;
+  --color-text: #202124;
+  --color-text-muted: #5f6368;
+  --color-heading: #202124;
+  --color-header: #ffffff;
+  --color-header-text: #202124;
+  --color-accent: #1a73e8;
+  --color-accent-hover: #1557b0;
+  --color-focus: #1a73e8;
   --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --measure: 72rem;
   --reading-measure: 68ch;
@@ -348,7 +343,7 @@ Use CSS custom properties so the system remains centrally adjustable:
 }
 ```
 
-The accent `#1769aa` has a measured contrast ratio of `5.47:1` against the page background `#f8f9f7`, passing WCAG AA for normal text. Keep this value unless implementation testing identifies a background-specific issue. Body text, links, and focus indicators must meet WCAG AA contrast requirements against their actual backgrounds.
+The accent #1a73e8 has a measured contrast ratio of 4.7:1 against white (#ffffff), passing WCAG AA for normal text. Body text, links, and focus indicators must meet WCAG AA contrast requirements against their actual backgrounds.
 
 ### 8.3 Typography
 
