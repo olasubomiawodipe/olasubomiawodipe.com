@@ -111,7 +111,6 @@ nav a.is-active {
   text-decoration: none;
 }
 
-body:not(.js):has(#home:target) nav a[href="#home"],
 body:not(.js):has(#about:target) nav a[href="#about"],
 body:not(.js):has(#research:target) nav a[href="#research"],
 body:not(.js):has(#experience:target) nav a[href="#experience"],

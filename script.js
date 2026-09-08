@@ -3,7 +3,9 @@
 document.body.classList.add("js");
 
 const sections = document.querySelectorAll("main section[id]");
-const sectionLinks = document.querySelectorAll('nav a[href^="#"]');
+const sectionLinks = document.querySelectorAll(
+  'nav a[href^="#"]:not([href="#home"])',
+);
 let pendingSectionId = null;
 
 const setActiveSection = (sectionId) => {
@@ -20,6 +22,7 @@ const setActiveSection = (sectionId) => {
 
 const updateActiveSection = () => {
   const headerOffset = 72;
+  const activeLine = headerOffset + (window.innerHeight - headerOffset) * 0.35;
   const isAtPageBottom =
     window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
 
@@ -27,7 +30,7 @@ const updateActiveSection = () => {
     const pendingSection = document.getElementById(pendingSectionId);
     const isPendingSectionReady =
       pendingSection &&
-      (pendingSection.getBoundingClientRect().top <= headerOffset ||
+      (pendingSection.getBoundingClientRect().bottom <= headerOffset ||
         (isAtPageBottom && pendingSection === sections[sections.length - 1]));
 
     if (!isPendingSectionReady) {
@@ -45,7 +48,7 @@ const updateActiveSection = () => {
   }
 
   sections.forEach((section) => {
-    if (section.getBoundingClientRect().top <= headerOffset) {
+    if (section.getBoundingClientRect().top <= activeLine) {
       activeSectionId = section.id;
     }
   });
