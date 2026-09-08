@@ -1,0 +1,111 @@
+name: Validate static site
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate HTML, links, and syntax
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate HTML
+        run: npx --yes html-validate@8 index.html
+
+      - name: Validate links and anchors
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          from urllib.parse import unquote, urlparse
+
+          class LinkParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.hrefs = []
+                  self.ids = set()
+
+              def handle_starttag(self, tag, attrs):
+                  attributes = dict(attrs)
+                  if "href" in attributes:
+                      self.hrefs.append(attributes["href"])
+                  if "id" in attributes:
+                      self.ids.add(attributes["id"])
+
+          parser = LinkParser()
+          parser.feed(Path("index.html").read_text())
+          root = Path(".")
+
+          for href in parser.hrefs:
+              parsed = urlparse(href)
+              if parsed.scheme or parsed.netloc:
+                  continue
+              if parsed.fragment:
+                  assert parsed.fragment in parser.ids, f"Missing anchor: {href}"
+              path = unquote(parsed.path)
+              if path:
+                  target = (root / path.lstrip("/"))
+                  assert target.is_file(), f"Missing local link target: {href}"
+
+          print(f"Checked {len(parser.hrefs)} links")
+          PY
+
+      - name: Check JavaScript syntax
+        run: node --check script.js
+
+      - name: Check CSS structure
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          css = Path("styles.css").read_text()
+          assert css.count("{") == css.count("}"), "Unbalanced CSS braces"
+          assert css.count("(") == css.count(")"), "Unbalanced CSS parentheses"
+          assert "--color-background:" in css, "Missing design tokens"
+          print("CSS structure check passed")
+          PY
+
+  lighthouse:
+    name: Advisory Lighthouse
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Start static server
+        run: |
+          python3 -m http.server 4173 > /tmp/static-server.log 2>&1 &
+          echo $! > /tmp/static-server.pid
+          for attempt in {1..10}; do
+            if curl --fail --silent http://127.0.0.1:4173/index.html > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/static-server.log
+          exit 1
+
+      - name: Run Lighthouse CI
+        run: |
+          npx --yes @lhci/cli@0.15.x autorun \
+            --collect.url=http://127.0.0.1:4173/index.html \
+            --upload.target=temporary-public-storage
