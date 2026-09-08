@@ -101,7 +101,7 @@ nav a {
   transition: color 150ms ease;
 }
 
-nav a:hover {
+nav li:not(:first-child) a:hover {
   color: var(--color-accent);
   text-decoration: none;
 }
