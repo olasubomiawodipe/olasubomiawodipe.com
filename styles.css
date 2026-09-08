@@ -106,11 +106,16 @@ nav a:hover {
   text-decoration: none;
 }
 
-body:has(#home:target) nav a[href="#home"],
-body:has(#about:target) nav a[href="#about"],
-body:has(#research:target) nav a[href="#research"],
-body:has(#experience:target) nav a[href="#experience"],
-body:has(#awards:target) nav a[href="#awards"] {
+nav a.is-active {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+body:not(.js):has(#home:target) nav a[href="#home"],
+body:not(.js):has(#about:target) nav a[href="#about"],
+body:not(.js):has(#research:target) nav a[href="#research"],
+body:not(.js):has(#experience:target) nav a[href="#experience"],
+body:not(.js):has(#awards:target) nav a[href="#awards"] {
   color: var(--color-accent);
   text-decoration: none;
 }
