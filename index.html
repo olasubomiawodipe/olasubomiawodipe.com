@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Olasubomi Awodipe | Software Engineer &amp; AI Researcher</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&amp;display=swap">
     <link rel="stylesheet" href="styles.css">
     <script src="script.js" defer></script>
   </head>
@@ -13,59 +16,74 @@
         <ul>
           <li><a href="#home">Olasubomi Awodipe</a></li>
           <li><a href="assets/Awodipe,%20Olasubomi_Resume.pdf">Resume</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#research">Research</a></li>
           <li><a href="#experience">Experience</a></li>
           <li><a href="#awards">Awards</a></li>
         </ul>
       </nav>
     </header>
 
-    <main>
-      <section id="home" aria-labelledby="home-heading">
-        <h1 id="home-heading">Olasubomi Awodipe</h1>
-        <p>Software Engineer &amp; AI Researcher</p>
-        <p>Building reliable production systems while pursuing high-impact machine learning research and a future founder trajectory.</p>
-      </section>
+    <!-- The page's scroll container. tabindex makes it keyboard-scrollable in
+         browsers that do not focus scrollable regions on their own. -->
+    <div class="scroll-area" tabindex="0">
+      <main>
+        <section id="home" aria-labelledby="home-heading">
+          <h1 id="home-heading">Olasubomi Awodipe</h1>
+          <p>Software Engineer &amp; AI Researcher</p>
+          <p>Building reliable production systems while pursuing high-impact machine learning research and a future founder trajectory.</p>
+        </section>
 
-      <section id="about" aria-labelledby="about-heading">
-        <h2 id="about-heading">About</h2>
-        <p>Olasubomi Awodipe works at the intersection of production engineering and AI research, with a long-term goal of building meaningful technology as a founder. His focus areas include reliable software systems, machine learning, and research that connects technical depth with practical impact.</p>
-      </section>
+        <section id="experience" class="timeline" aria-labelledby="experience-heading">
+          <h2 id="experience-heading">Experience</h2>
+          <article>
+            <h3>Microsoft</h3>
+            <p class="role">Software Engineer Intern</p>
+            <p class="period"><time datetime="2026-05">May 2026</time> – <time datetime="2026-08">August 2026</time></p>
+            <ul>
+              <li>Built a zero-to-one evaluation framework in Python for an on-call agent handling 31,000+ incidents annually across 4 teams, creating the foundation to safely enable automated incident mitigation</li>
+              <li>Architected production infrastructure using Azure Functions, Blob Storage, Managed Identities, and Bicep templates to migrate the pipeline from local execution to scalable deployment</li>
+              <li>Resolved critical telemetry discrepancies by creating a custom region-mapping schema to align raw telemetry with Azure tenant conventions</li>
+              <li>Led multiple design reviews with 10+ engineers, incorporating cross-functional feedback, and authoring design, migration and handoff documentation to support future ownership and adoption</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Audible</h3>
+            <p class="role">Software Development Engineer Intern</p>
+            <p class="period"><time datetime="2025-06">June 2025</time> – <time datetime="2025-08">August 2025</time></p>
+            <ul>
+              <li>Automated QA validations across web (desktop + mobile) and apps with a projected savings of 113.6 engineering hours annually by applying advanced prompt engineering to an internal Large Action Model with dynamic account vending</li>
+              <li>Drove the end-to-end development of an Author Page content discovery feature for millions of global users across NA, EU, and FE marketplaces, by implementing 6 sort options and 4 multi-select filters in Java and Spring MVC</li>
+              <li>Unblocked global feature release by identifying a deprecated localization dependency and leading the cross-team onboarding of the new localization platform</li>
+            </ul>
+          </article>
+        </section>
 
-      <section id="research" aria-labelledby="research-heading">
-        <h2 id="research-heading">Research</h2>
-        <p>Research projects and preprints will be listed here as their titles, statuses, dates, and primary sources are verified.</p>
-      </section>
+        <section id="education" class="timeline" aria-labelledby="education-heading">
+          <h2 id="education-heading">Education</h2>
+          <article>
+            <h3>Alabama A&amp;M University</h3>
+            <p class="role">B.S. Computer Science</p>
+            <p class="gpa">GPA: 4.0</p>
+            <p class="period">Expected <time datetime="2027-05">May 2027</time></p>
+          </article>
+        </section>
 
-      <section id="experience" aria-labelledby="experience-heading">
-        <h2 id="experience-heading">Experience</h2>
-        <article>
-          <h3>Microsoft</h3>
-          <p>Selected professional experience.</p>
-        </article>
-        <article>
-          <h3>Audible, Inc.</h3>
-          <p>Selected professional experience.</p>
-        </article>
-      </section>
+        <section id="awards" aria-labelledby="awards-heading">
+          <h2 id="awards-heading">Awards</h2>
+          <article>
+            <p>
+              <time datetime="2026-08">August 2026</time>
+              People's Choice &amp; Overall Showcase Winner, Microsoft CISO Org Intern Showcase
+            </p>
+          </article>
+        </section>
+      </main>
 
-      <section id="awards" aria-labelledby="awards-heading">
-        <h2 id="awards-heading">Awards</h2>
-        <article>
-          <p>
-            <time datetime="2026">2026</time>
-            <strong>People's Choice &amp; Overall Showcase Winner, Microsoft CISO Org Intern Showcase</strong>
-          </p>
-        </article>
-      </section>
-    </main>
-
-    <footer id="footer">
-      <p>&copy; 2026 Olasubomi Awodipe</p>
-      <p>
-        <a href="#home">Back to top</a>
-      </p>
-    </footer>
+      <footer>
+        <p>&copy; 2026 Olasubomi Awodipe</p>
+        <p>
+          <a href="mailto:olasubomiawodipe@gmail.com">Email</a>
+        </p>
+      </footer>
+    </div>
   </body>
 </html>

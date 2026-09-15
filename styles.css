@@ -4,7 +4,12 @@
   --color-surface: #f8f9fa;
   --color-surface-strong: #f1f3f4;
   --color-border: #dadce0;
-  --color-text: #202124;
+  /* Three text tones, not two: body copy sits between headings and secondary
+     text so a phrase inside a sentence can be emphasised without becoming a
+     heading. Previously everything that was not a heading was one muted grey,
+     which is why nothing in the copy could carry weight. */
+  --color-text-strong: #202124;
+  --color-text: #3c4043;
   --color-text-muted: #5f6368;
   --color-heading: #202124;
   --color-header: #ffffff;
@@ -27,6 +32,9 @@
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --shadow-subtle: 0 1px 2px rgb(16 22 20 / 0.05);
+  /* Width of .scroll-area's scrollbar. script.js measures it; 0 is both the
+     no-JS fallback and the real value wherever scrollbars are overlays. */
+  --scrollbar-width: 0px;
 }
 
 *,
@@ -39,40 +47,72 @@ html,
 body {
   margin: 0;
   padding: 0;
-  overflow-x: visible;
-  overflow-y: visible;
   overscroll-behavior-y: contain;
 }
 
 html {
   background: var(--color-background);
+  overflow-x: clip;
 }
 
+/* Body fills the viewport and never scrolls itself, so the page's only scroller
+   is .scroll-area below the header. That is what keeps the scrollbar inside the
+   content area instead of running the full window height. 100vh is the fallback
+   for browsers without dvh; dvh tracks the visible area as mobile browser chrome
+   resizes. */
 body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   background: var(--color-background);
   color: var(--color-text);
   font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.6;
-  padding-top: 4.5rem;
 }
 
+/* In flow as the first flex item, so it reserves its own space and cannot be
+   scrolled away. No fixed positioning, and so no padding offset on body.
+   Sitting outside .scroll-area, it loses no width to the scrollbar, so it has
+   to reserve that width itself to keep the nav aligned with the content. The
+   padding is inside the border box, so the bar still spans the full width. */
 header {
-  width: 100%;
-  margin: 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 10;
+  flex: none;
+  padding-inline-end: var(--scrollbar-width);
   background: var(--color-header);
   color: var(--color-header-text);
   border-bottom: 1px solid var(--color-border);
 }
 
+/* The page's only scroll container. min-height: 0 lets it shrink below its
+   content height so it scrolls, rather than growing and pushing the header
+   off-screen. scrollbar-gutter keeps its width steady when the scrollbar comes
+   and goes (no-op where scrollbars are overlays: macOS default, iOS, Android). */
+.scroll-area {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+}
+
+/* Slim the bar down. Only the standard property is used: adding
+   ::-webkit-scrollbar rules would opt this element out of overlay scrollbars
+   and leave a bar permanently visible on macOS, which is the opposite of the
+   goal. .scrollbar-probe is the throwaway element script.js measures, and has
+   to carry the same width or the header would reserve the wrong gutter. */
+.scroll-area,
+.scrollbar-probe {
+  scrollbar-width: thin;
+}
+
 nav,
 main,
 footer {
-  width: min(100% - 2rem, var(--measure));
+  width: min(100% - 3rem, var(--measure));
   margin-inline: auto;
 }
 
@@ -95,10 +135,17 @@ nav a {
   display: inline-block;
   padding: var(--space-2) 0;
   color: var(--color-header-text);
-  font-size: 0.9375rem;
-  font-weight: 600;
+  font-size: 0.875rem;
+  font-weight: 500;
   text-decoration: none;
   transition: color 150ms ease;
+}
+
+/* The name is the one nav item that is not a peer of the others: it reads as a
+   wordmark rather than a link, so it carries both the weight and the size. */
+nav li:first-child a {
+  font-size: 0.9375rem;
+  font-weight: 600;
 }
 
 nav li:not(:first-child) a:hover {
@@ -111,8 +158,6 @@ nav a.is-active {
   text-decoration: none;
 }
 
-body:not(.js):has(#about:target) nav a[href="#about"],
-body:not(.js):has(#research:target) nav a[href="#research"],
 body:not(.js):has(#experience:target) nav a[href="#experience"],
 body:not(.js):has(#awards:target) nav a[href="#awards"] {
   color: var(--color-accent);
@@ -123,15 +168,17 @@ main {
   padding-block: var(--space-7) var(--space-9);
 }
 
+/* The scroll container already starts below the header, so anchored sections
+   only need a small breathing gap rather than a full header offset. */
 section {
   margin-block: var(--space-8);
-  scroll-margin-top: 5rem;
+  scroll-margin-top: var(--space-2);
 }
 
 #home {
   margin-top: 0;
-  margin-bottom: var(--space-9);
-  padding-block: var(--space-8) var(--space-9);
+  margin-bottom: var(--space-6);
+  padding-block: 0 var(--space-7);
 }
 
 h1,
@@ -142,27 +189,33 @@ h3 {
   line-height: 1.15;
 }
 
-header a,
-header h1,
-header h2,
-header h3 {
-  color: var(--color-header-text);
-}
-
 h1 {
-  font-size: clamp(2rem, 5vw, 4rem);
+  font-size: clamp(2rem, 4.2vw, 3.25rem);
   font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.022em;
 }
 
+/* Section names are signposts, not content. Kept small and quiet so the entries
+   beneath them — the company and institution names — lead the hierarchy. When
+   these were 2rem/700 they shouted over the specific names that matter. */
 h2 {
-  margin-bottom: var(--space-5);
-  font-size: 2rem;
-  font-weight: 700;
+  margin-bottom: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
+/* Display sizes are mobile-first: these are the phone values, scaled up in the
+   48rem query. Body copy is deliberately NOT scaled — it has an absolute
+   legibility floor that does not depend on how wide the column is. */
 h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
 }
 
 p {
@@ -170,25 +223,41 @@ p {
   margin-block: var(--space-2);
 }
 
+/* Keep long organization names and URLs from overflowing their container. */
+p,
+li,
+a,
+strong,
+time {
+  overflow-wrap: anywhere;
+}
+
 section > p {
   color: var(--color-text-muted);
 }
 
+/* The line under the name is a positioning statement, not a caption, so it
+   carries real size and weight rather than sitting muted and small. */
 #home p:first-of-type {
-  margin-top: 1;
-  color: var(--color-text-muted);
-  font-size: 1.125rem;
-  font-weight: 400;
+  margin-top: var(--space-3);
+  color: var(--color-text);
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 #home p:last-of-type {
-  margin-top: var(--space-7);
+  margin-top: var(--space-6);
   margin-bottom: 0;
-  font-size: 1.0625rem;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
 }
 
 article {
   margin-top: var(--space-7);
+}
+
+article:first-of-type {
+  margin-top: var(--space-4);
 }
 
 article p {
@@ -196,7 +265,60 @@ article p {
   color: var(--color-text-muted);
 }
 
+/* Stacked under the heading at narrow widths, so it needs the same breathing
+   room a paragraph would have. The two-column rule below zeroes this again. */
+.timeline ul {
+  margin: var(--space-2) 0 0;
+  padding-left: 1.125rem;
+  color: var(--color-text);
+  font-size: 0.8125rem;
+  line-height: 1.7;
+}
+
+/* No reading-measure cap here. These are scanned, not read as prose, and the
+   68ch cap was breaking them onto a third line inside a column twice that wide.
+   --measure already bounds how long a line can get. */
+.timeline li {
+  margin-bottom: var(--space-3);
+}
+
+.timeline li:last-child {
+  margin-bottom: 0;
+}
+
+.timeline li::marker {
+  color: var(--color-border);
+}
+
+.timeline .role,
+.timeline .gpa {
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* The date rail matches the Awards section's left column so the whole page
+   reads against one timeline. Tabular figures keep the dates in vertical
+   register down that rail. */
+.timeline .period {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/* The range may wrap between the two dates, but never inside one. */
+.timeline .period time {
+  white-space: nowrap;
+}
+
+/* This <p> is the grid container for the whole entry, so the inherited 68ch
+   reading measure was capping the entry rather than the prose inside it, and
+   squeezing the title into a second line. Award names are scanned, not read. */
 #awards article p {
+  max-width: none;
+  font-size: 0.875rem;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
@@ -205,32 +327,42 @@ article p {
 
 #awards time {
   color: var(--color-text-muted);
-  font-size: 0.9375rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
 #awards strong {
-  color: var(--color-heading);
+  color: var(--color-text-strong);
+  font-weight: 600;
 }
 
 footer {
   min-height: var(--space-8);
   padding-block: var(--space-5);
-  border-top: 1px solid var(--color-border);
 }
 
 footer p {
   margin-block: 0 var(--space-3);
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
 }
 
 footer a {
-  color: var(--color-accent);
-  text-underline-offset: 0.2em;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+footer p:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
 }
 
 footer a:hover {
-  color: var(--color-accent-hover);
+  color: var(--color-heading);
 }
 
 @media (min-width: 48rem) {
@@ -238,6 +370,27 @@ footer a:hover {
   main,
   footer {
     width: min(100% - 4rem, var(--measure));
+  }
+
+  h3 {
+    font-size: 1.125rem;
+  }
+
+  .timeline ul {
+    font-size: 0.875rem;
+    line-height: 1.65;
+  }
+
+  #home p:first-of-type {
+    font-size: 1.0625rem;
+  }
+
+  nav a {
+    font-size: 0.9375rem;
+  }
+
+  nav li:first-child a {
+    font-size: 1.0625rem;
   }
 
   nav ul {
@@ -249,6 +402,97 @@ footer a:hover {
   }
 
   #home {
+    margin-bottom: var(--space-9);
     padding-block: var(--space-9);
+  }
+
+  #home p:last-of-type {
+    margin-top: var(--space-7);
+  }
+
+  /* Dates in the left rail; company, role and bullets stacked on the right.
+     Row spacing is set per item rather than with a row gap, so the company and
+     role stay a tight pair while the bullets get more air beneath them. */
+  .timeline article {
+    display: grid;
+    grid-template-columns: minmax(10.5rem, 0.3fr) minmax(0, 2fr);
+    column-gap: var(--space-6);
+    margin-top: var(--space-7);
+  }
+
+  /* Matches the same specificity as the rule above, so it has to be repeated
+     inside the query to survive it. */
+  .timeline article:first-of-type {
+    margin-top: var(--space-4);
+  }
+
+  /* Spans every row rather than sitting in the first one. A date that wraps to
+     two lines would otherwise set the height of row 1 and push the role line
+     down, so entries with a long date range read looser than short ones. */
+  .timeline .period {
+    grid-column: 1;
+    grid-row: 1 / span 4;
+    align-self: start;
+    margin-top: 0;
+  }
+
+  .timeline article h3 {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .timeline .role {
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: var(--space-2);
+  }
+
+  /* Row 3 is the GPA in Education and empty in Experience; with no row-gap an
+     unused row collapses to nothing, so the bullets sit tight either way. */
+  .timeline .gpa {
+    grid-column: 2;
+    grid-row: 3;
+    margin-top: var(--space-2);
+  }
+
+  .timeline article ul {
+    grid-column: 2;
+    grid-row: 4;
+    margin-top: var(--space-5);
+  }
+
+  /* Same rail as .timeline, so the award text starts on the same vertical as
+     the company names above it. */
+  #awards article p {
+    display: grid;
+    grid-template-columns: minmax(10.5rem, 0.3fr) minmax(0, 2fr);
+    gap: var(--space-6);
+  }
+
+  footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+  }
+
+  footer p {
+    margin: 0;
+  }
+}
+
+@media (min-width: 75rem) {
+  nav,
+  main,
+  footer {
+    width: min(100% - 6rem, var(--measure));
+  }
+}
+
+@media (min-width: 120rem) {
+  nav,
+  main,
+  footer {
+    width: min(100% - 8rem, var(--measure));
   }
 }

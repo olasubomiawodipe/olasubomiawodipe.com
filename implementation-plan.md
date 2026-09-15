@@ -2,6 +2,14 @@
 
 This plan breaks the site implementation into small, independently reviewable pull requests. Each merged PR leaves the repository in a working state and builds only on earlier work.
 
+## Status
+
+- PR 1 through PR 3 are merged. `main` has the semantic shell, verified content, and the mobile-first visual foundation.
+- The mobile foundation also introduced `script.js` (strict mode, progressive active-section highlighting). PR 9 is therefore rescoped to extend that file rather than create it.
+- PR 4 (early CI validation) is open for review on the `olasubomiawodipe/early-ci-validation` branch.
+- PR 5 (tablet, desktop, and widescreen layouts) is in progress on `olasubomiawodipe/responsive-layouts` and has grown well past its original scope. It now also carries a scroll-architecture change, a typography system, real Experience content, a new Education section, the removal of the Research and About sections, and a bug fix that also applies to `main`. See "PR 5: As built" and "Splitting the responsive-layouts branch".
+- Two defects are known and open: trailing sections do not reliably receive the active-nav highlight, and the header navigation wraps to two rows below roughly 415px. Both are tracked under PR 9.
+
 ## PR 1: Establish the Semantic Site Shell
 
 ### Includes
@@ -68,8 +76,11 @@ Sections 6, 7, 15.4, and 18 step 2.
 ### Does not include
 
 - Tablet, desktop, or widescreen compositions.
-- JavaScript behavior.
 - Final accessibility testing.
+
+### As merged
+
+This PR also added a minimal `script.js`: strict mode, a `js` body class, and progressive active-section highlighting. It is not required for navigation and degrades cleanly when JavaScript is disabled.
 
 ### Design-doc sections
 
@@ -121,14 +132,34 @@ Sections 14.3, 15.1, 15.4, and 18 step 8.
 - Add Research and Experience grids where appropriate.
 - Add the desktop hero composition.
 - Align header, content, and footer containers.
-- Add anchor offsets and overflow safeguards.
+- Add anchor offsets and overflow safeguards, including keeping the existing `script.js` header measurement in sync with the responsive header.
 
 ### Does not include
 
-- New content.
+- New sections or new factual claims. Small footer link adjustments tied to the layout are allowed.
 - Mobile-menu JavaScript.
 - Metadata or additional CI workflows.
 - Changes to the existing CI workflow unless required to keep current checks passing.
+
+### As built
+
+The branch delivered the planned responsive work and then absorbed several changes that belong to other PRs. Recorded here so the divergence is visible rather than discovered at review.
+
+In the original scope:
+
+- Breakpoints at 48rem, 75rem, and 120rem, with aligned header, content, and footer containers.
+- Two-column grids for Experience, Education, and Awards, sharing one date rail so every dated entry aligns on a single vertical.
+- Verified with no horizontal overflow at 320, 360, 375, 390, 410, 430, 768, 1024, 1280, and 1512px.
+
+Beyond the original scope:
+
+- **Contained scroll area.** `body` is a full-height flex column that does not scroll; a `.scroll-area` wrapper below the header is the page's only scroller, so the scrollbar begins at the header's lower edge instead of running the full window height. The header is in normal flow rather than `position: fixed`. This removed the `--header-height` measurement that this PR's scope had called for keeping in sync, and replaced it with `--scrollbar-width`, measured in `script.js`, so the header reserves the gutter the content below it loses to a classic scrollbar. Known cost: mobile browsers do not collapse their URL bar for non-root scrollers.
+- **Scrollbar treatment.** `scrollbar-gutter: stable` and `scrollbar-width: thin` on the scroll area and on the throwaway probe `script.js` measures. The probe must carry the same width or the header reserves the wrong gutter.
+- **Experience content.** Microsoft and Audible entries with roles, date ranges, and achievement bullets. This is PR 2 work landing late.
+- **Education section.** Alabama A&M University, degree, GPA, and expected graduation. A new section, which this PR explicitly excluded.
+- **Research and About sections removed.** Research shipped an editorial placeholder describing its own unfinished state, and About restated the hero almost verbatim. Section count is now three plus the hero, not the five PR 1 established.
+- **Typography system.** Inter is now actually loaded; it was previously declared in the font stack but never fetched, so it resolved only on machines with Inter installed locally and every other visitor saw a system font. A full type scale was introduced with three text tones, and display sizes scale across the 48rem breakpoint while body sizes do not.
+- **Active-section highlighting fix.** The click-to-scroll lock released only after the target section had scrolled entirely above the reading area, which froze the highlight for as long as that section was on screen. The same defect exists on `main`.
 
 ### Design-doc sections
 
@@ -139,7 +170,24 @@ Sections 8.4, 9, 15.3, and 18 step 4.
 - Test 320x568, 440x956, 768x1024, 1440x900, and 1920x1080.
 - Check grid behavior, wrapping, line length, anchor positioning, and overflow.
 - Confirm the first viewport reveals the beginning of the next content area.
+- Confirm the page has exactly one scroll container and that the header never scrolls.
+- Confirm the date rail aligns across Experience, Education, and Awards.
+- Confirm Inter is fetched over the network rather than resolved from a local install.
 - Confirm CI passes.
+
+## Splitting the responsive-layouts branch
+
+The branch is one uncommitted change set spanning four files. It is split into the commit series below before review, in dependency order. These are stacked rather than independent: the stylesheet hunks overlap heavily, so they cannot be cherry-picked into parallel branches without conflicts.
+
+1. Active-section highlighting fix. `script.js` only. Fixes a defect present on `main` and stands alone.
+2. Contained scroll area. The architecture change, kept as one commit so it can be reverted on its own if the mobile URL-bar cost proves unacceptable on real devices.
+3. Scrollbar treatment. Gutter, thin scrollbars, and the `--scrollbar-width` measurement.
+4. Experience content. Roles, date ranges, and bullets.
+5. Education section.
+6. Section removals, ordering, and navigation changes.
+7. Typography. Font loading, type scale, and text tones.
+8. Timeline rail layout and grid alignment.
+9. Mobile refinements. Gutter width, responsive display sizes, and the body-size step-down.
 
 ## PR 6: Harden Keyboard and Motion Accessibility
 
@@ -213,6 +261,7 @@ Sections 5, 11, 15.1, and 18 step 6.
 - Add validation for JSON-LD syntax and required properties.
 - Add validation for `robots.txt` and `sitemap.xml`.
 - Add validation for canonical, Open Graph, and final link requirements.
+- Add a content-parity check asserting that the machine-readable copy still matches the visible copy: `<meta name="description">`, the Open Graph and Twitter/X description, and the JSON-LD `description` and `name` must agree with the rendered hero and About text. This is the one place the site genuinely duplicates content, and the drift is invisible without a check.
 - Make these checks mandatory now that the artifacts exist.
 
 ### Does not include
@@ -224,34 +273,39 @@ Sections 5, 11, 15.1, and 18 step 6.
 
 ### Design-doc sections
 
-Sections 11, 14.3, 15.1, 15.4, and 18 step 8.
+Sections 7, 11, 14.3, 15.1, 15.4, and 18 step 8.
 
 ### Verification
 
 - Confirm only `.github/workflows/lighthouse.yml` is changed for CI.
 - Run the workflow successfully.
 - Temporarily break one metadata artifact and confirm CI fails.
+- Temporarily reword the hero or About copy without updating the metadata and confirm the content-parity check fails.
 - Confirm Lighthouse remains advisory.
 - Confirm all earlier validation steps still execute.
 
-## PR 9: Add Progressive JavaScript Enhancement
+## PR 9: Extend Progressive JavaScript Enhancement
 
 ### Includes
 
-- Create `script.js` with strict mode.
-- Add only the navigation enhancement required by the final layout.
-- Implement correct `aria-expanded` and `aria-controls` state.
-- Support Escape-to-close.
-- Restore focus to the menu trigger.
-- Add optional active-section or header-scroll state only if useful.
+- Keep `script.js` in strict mode with no external dependencies.
+- Add a navigation disclosure menu only if the final layout needs one. If the header navigation still works without a toggle, limit this PR to hardening the existing active-section script.
+- If a disclosure menu is added: implement correct `aria-expanded` and `aria-controls` state, support Escape-to-close, and restore focus to the menu trigger.
+- Keep active-section and any header-scroll state only where it earns its place.
 
 ### Does not include
 
+- Creating `script.js` from scratch; it already exists.
 - Content rendering.
-- Required navigation behavior.
+- Navigation that depends on JavaScript to function.
 - Analytics or third-party scripts.
 - Animations that hide content.
 - Additional workflow files.
+
+### As scoped after PR 5
+
+- The disclosure menu is now required, not conditional. With the current type sizes the header navigation wraps to two rows below roughly 415px, taking the header from 73px to 111px on every common phone width. Repeated attempts to recover a single row by adjusting type and spacing traded the threshold back and forth without resolving it.
+- This PR also owns the trailing-section highlighting defect. Sections near the end of the document cannot rise above the active line on tall viewports, and the bottom-of-page fallback is hardcoded to select the last section, so it overrides an otherwise correct answer. Education receives no highlight at all at 1512px. The fix is to rework how trailing sections are selected, not to widen the existing tolerance.
 
 ### Design-doc sections
 
@@ -270,7 +324,7 @@ Sections 4.2, 4.3, 6.2, 10, and 18 step 7.
 
 ### Includes
 
-- Add self-hosted Inter font files and the SIL license notice.
+- Replace the Google Fonts stylesheet added in PR 5 with self-hosted Inter font files and the SIL license notice. PR 5 loaded Inter from `fonts.googleapis.com` to fix a font that was declared but never fetched; self-hosting removes the third-party request and the render-blocking stylesheet.
 - Add favicon and Apple touch-icon assets.
 - Add approved optimized images or the canonical resume if applicable.
 - Add explicit dimensions, formats, lazy loading, and decoding attributes where needed.
